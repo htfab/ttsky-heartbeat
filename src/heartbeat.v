@@ -18,6 +18,12 @@ reg [2:0] index;
 reg manchester;
 wire manchester_delayed;
 
+`ifdef COCOTB_SIM
+
+assign manchester_delayed = manchester;
+
+`else
+
 wire [`INVERTER_CHAIN_LENGTH:0] inverter_chain;
 assign inverter_chain[0] = !manchester;
 assign manchester_delayed = !inverter_chain[`INVERTER_CHAIN_LENGTH];
@@ -25,13 +31,14 @@ assign manchester_delayed = !inverter_chain[`INVERTER_CHAIN_LENGTH];
 genvar i;
 generate
     for (i=0; i<`INVERTER_CHAIN_LENGTH; i=i+1) begin
-`ifdef SIM
-        assign inverter_chain[i+1] = #1 inverter_chain[i];
-`else
-        inverter i_inv(.a(inverter_chain[i]), .y(inverter_chain[i+1]));
-`endif
+        inverter i_inv(
+            .a(inverter_chain[i]),
+            .y(inverter_chain[i+1])
+        );
     end
 endgenerate
+
+`endif
 
 always @(posedge clk) begin
     manchester <= !manchester_delayed;
