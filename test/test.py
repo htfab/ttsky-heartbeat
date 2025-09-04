@@ -11,12 +11,12 @@ async def test_project(dut):
         # RTL test
         regs = ([dut.hb.counter[i] for i in range(8)] +
                 [dut.hb.index[i] for i in range(3)] +
-                [dut.hb.manchester, dut.hb.signal])
+                [dut.hb.manchester])
     except AttributeError:
         # GL test
         regs = ([dut.hb._id(rf"\counter[{i}]", extended=False) for i in range(8)] +
                 [dut.hb._id(rf"\index[{i}]", extended=False) for i in range(3)] +
-                [dut.hb.manchester, dut.hb.signal])
+                [dut.hb.manchester])
 
     clock = Clock(dut.clk, 10, units="us")
     cocotb.start_soon(clock.start())
